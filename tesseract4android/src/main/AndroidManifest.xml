@@ -1,4 +1,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cz.adaptech.android.tesseract4android">
+    package="com.googlecode.tesseraction">
 
+	<uses-permission android:name="android.permission.STORAGE" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+	<application
+		android:label="图文之心"
+		>
+		<activity
+			android:name=".TestActivity"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<provider
+			android:name="com.googlecode.tesseraction.PluginFileProvider"
+			android:authorities="com.googlecode.tesseraction"
+			android:exported="true" >
+		</provider>
+	</application>
 </manifest>

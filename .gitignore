@@ -13,3 +13,5 @@
 .cxx
 /.idea/markdown-*
 /.idea/jarRepositories.xml
+release
+.idea/inspectionProfiles

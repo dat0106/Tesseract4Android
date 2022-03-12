@@ -24,6 +24,9 @@
 #include <tesseract/ocrclass.h>
 #include "allheaders.h"
 #include <tesseract/renderer.h>
+#include <unistd.h>
+//#include <sys/mman.h>
+#include <sys/stat.h>
 
 static jmethodID method_onProgressValues;
 
@@ -166,12 +169,59 @@ jboolean Java_com_googlecode_tesseract_android_TessBaseAPI_nativeInit(JNIEnv *en
   return res;
 }
 
+JNIEnv *g_env;
+
+inline long getFileSize(int fd){
+    struct stat file_state;
+
+    if(fstat(fd, &file_state) >= 0){
+        return (long)(file_state.st_size);
+    }else{
+        LOGE("Error getting file size");
+        return 0;
+    }
+}
+
+// The default FileReader loads the whole file into the vector of char,
+// returning false on error.
+bool LoadDataFromContentProvider(const char *filename, std::vector<char> *data) {
+    // /storage/emulated/0/tesseract/tessdata/eng.traineddata
+    LOGI("fatal LoadDataFromFile filename=%s", filename);
+    bool result = false;
+
+    jclass clazz = g_env->FindClass("com/googlecode/tesseraction/Utils");
+    jmethodID mOpenFileDescriptor = g_env->GetStaticMethodID(clazz, "openFileDescriptor", "(Ljava/lang/String;)Landroid/os/ParcelFileDescriptor;");
+    jobject input = g_env->CallStaticObjectMethod(clazz, mOpenFileDescriptor, g_env->NewStringUTF(filename));
+    if(input != nullptr)
+    {
+        // g_env->FindClass("android/os/ParcelFileDescriptor");//
+        clazz = g_env->GetObjectClass(input);
+        jmethodID mGetFd = g_env->GetMethodID(clazz, "getFd", "()I");
+        jint fd = g_env->CallIntMethod(input, mGetFd);
+
+        auto size = getFileSize(fd);
+        // Trying to open a directory on Linux sets size to LONG_MAX. Catch it here.
+        if (size > 0 && size < LONG_MAX) {
+            // reserve an extra byte in case caller wants to append a '\0' character
+            data->reserve(size + 1);
+            data->resize(size); // TODO: optimize no init
+            result = static_cast<long>(read(fd, &(*data)[0], size)) == size;
+        }
+        //close(fd);
+        jmethodID mClose = g_env->GetMethodID(clazz, "close", "()V");
+        g_env->CallVoidMethod(input, mClose);
+    }
+    return result;
+}
+
 jboolean Java_com_googlecode_tesseract_android_TessBaseAPI_nativeInitOem(JNIEnv *env, 
                                                                          jobject thiz,
                                                                          jlong mNativeData,
                                                                          jstring dir, 
                                                                          jstring lang, 
                                                                          jint mode) {
+
+    g_env = env;
 
   native_data_t *nat = (native_data_t*) mNativeData;
 
@@ -180,7 +230,10 @@ jboolean Java_com_googlecode_tesseract_android_TessBaseAPI_nativeInitOem(JNIEnv 
 
   jboolean res = JNI_TRUE;
 
-  if (nat->api.Init(c_dir, c_lang, (tesseract::OcrEngineMode) mode)) {
+  if (nat->api.Init(c_dir, 0, c_lang, (tesseract::OcrEngineMode) mode
+                    , nullptr, 0, nullptr, nullptr, false
+                    , /*(tesseract::FileReader)*/LoadDataFromContentProvider
+                    )) {
     LOGE("Could not initialize Tesseract API with language=%s!", c_lang);
     res = JNI_FALSE;
   } else {
