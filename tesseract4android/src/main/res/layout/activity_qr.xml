@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools">
+
+<merge>
+	<FrameLayout
+		android:id="@+id/video_surface_frame"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		>
+
+		<FrameLayout
+			android:id="@+id/surface_holder"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			>
+			<TextureView
+				android:id="@+id/preview_view"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" />
+		</FrameLayout>
+	</FrameLayout>
+
+	<com.googlecode.tesseraction.CropView
+		android:id="@+id/qr_frame"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:background="#60000000"
+		/>
+
+	<LinearLayout
+		android:id="@+id/toolbar_content"
+		android:layout_width="match_parent"
+		android:layout_height="60dp"
+		android:background="#00000000"
+		android:fitsSystemWindows="true"
+		android:gravity="center_vertical"
+		android:padding="10dp"
+		>
+		<ImageView
+			android:id="@+id/ivBack"
+			android:src="@drawable/ic_baseline_arrow_back_24"
+			style="@style/QRActionBarItem"
+			/>
+		<TextView
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:textColor="#ffffffff"
+			android:textSize="20sp"
+			tools:text="扫一扫"
+			android:gravity="center_vertical"
+			android:paddingLeft="10dp"
+			/>
+
+		<ImageView
+			android:id="@+id/camera"
+			android:src="@drawable/ic_baseline_camera_enhance_24"
+			style="@style/QRActionBarItem"
+			android:visibility="gone"
+			/>
+
+		<ImageView
+			android:id="@+id/torch"
+			android:src="@drawable/ic_baseline_torch"
+			style="@style/QRActionBarItem"
+			/>
+
+<!--		<ImageView-->
+<!--			android:id="@+id/tools"-->
+<!--			android:src="@drawable/tools_toolbar"-->
+<!--			style="@style/QRActionBarItem"-->
+<!--			android:padding="6dp"-->
+<!--			/>-->
+
+		<ImageView
+			android:id="@+id/folder"
+			android:src="@drawable/ic_baseline_folder_open_solid"
+			style="@style/QRActionBarItem"
+			/>
+
+	</LinearLayout>
+
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="#000"
+		android:visibility="gone"
+		/>
+
+	<Button
+		android:id="@+id/tv1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="打开相机"
+		android:layout_gravity="center_horizontal"
+		android:padding="10dp"
+		android:textColor="#FF1FB3E2"
+		android:background="?android:attr/listChoiceBackgroundIndicator"
+		android:visibility="gone"
+		/>
+
+	<LinearLayout
+		android:id="@+id/toast"
+		android:layout_width="match_parent"
+		android:layout_height="75dp"
+		android:background="@drawable/frame_toast"
+		android:layout_gravity="bottom"
+		android:layout_marginBottom="78dp"
+		android:layout_marginLeft="25dp"
+		android:layout_marginRight="25dp"
+		>
+		<ImageView
+			android:id="@+id/copy"
+			android:src="@drawable/ic_baseline_copy_24"
+			style="@style/SearchbarMenuTextStyle"
+			android:layout_weight="0"
+			android:layout_width="wrap_content"
+			android:padding="12dp"
+			android:tint="#333"
+			/>
+		<TextView
+			android:id="@+id/toast_tv"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_gravity="center_horizontal"
+			style="@style/SearchbarMenuTextStyle"
+			android:textSize="17sp"
+			android:gravity="left|center_vertical"
+			android:text="asdsaasd\nsdasdada"
+			android:singleLine="false"
+			android:textColor="#000"
+			/>
+		<ImageView
+			android:id="@+id/icon_share"
+			android:src="@drawable/ic_baseline_share_24"
+			android:layout_width="wrap_content"
+			android:layout_weight="0"
+			style="@style/SearchbarMenuTextStyle"
+			android:padding="15dp"
+			android:tint="#333"
+			/>
+	</LinearLayout>
+
+</merge>
+
+</layout>

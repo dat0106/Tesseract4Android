@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="AppTheme">
+		<item name="android:windowNoTitle">true</item>
+	</style>
+
+	<style name="QRActionBarItem">
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:layout_width">45dp</item>
+		<item name="android:background">?android:attr/actionBarItemBackground</item>
+		<item name="android:padding">3dp</item>
+	</style>
+
+	<style name="SearchbarMenuTextStyle">
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:layout_width">0dp</item>
+		<item name="android:layout_weight">1</item>
+		<item name="android:textColor">#fff</item>
+		<item name="android:textSize">14sp</item>
+		<item name="android:padding">6dp</item>
+		<item name="android:singleLine">true</item>
+		<item name="android:gravity">center</item>
+		<item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
+	</style>
+
+	<style name="SearchbarMenuTextStyle_dlg" parent="SearchbarMenuTextStyle">
+		<item name="android:textSize">10sp</item>
+	</style>
+</resources>
