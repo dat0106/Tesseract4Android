@@ -13,8 +13,11 @@ public class Utils {
 		ParcelFileDescriptor fd = null;
 		
 		try {
-			//Uri uri = Uri.parse(PluginFileProvider.baseUri+name);
-			Uri uri = Uri.parse(PluginFileProvider.baseUri+"eng.traineddata");
+			int idx = name.lastIndexOf("tessdata");
+			if(idx>=0) {
+				name = name.substring(idx);
+			}
+			Uri uri = Uri.parse(PluginFileProvider.baseUri+name);
 			fd = contentResolver.openFileDescriptor(uri, "rb");
 		} catch (Exception e) {
 			CMN.Log(e);

@@ -46,14 +46,13 @@ public class TesseractPluginTest {
 		CMN.rt();
 		TessBaseAPI tess = new TessBaseAPI();
 
-		String dataPath = new File(Environment.getExternalStorageDirectory(), "tesseract").getAbsolutePath();
-
 		Utils.contentResolver = context.getContentResolver();
 		
-		tess.init(dataPath, "eng");
+		tess.init(null, "eng");
 		
 		tess.setImage(getBitmapFromAsset(context, R.raw.text));
 		
+		//tess.setImage(new Data[], , , ,);
 		
 		String text = tess.getHOCRText(0);
 		CMN.pt("test_done", text);

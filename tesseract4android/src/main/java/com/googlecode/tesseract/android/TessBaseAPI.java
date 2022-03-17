@@ -407,19 +407,20 @@ public class TessBaseAPI {
 		if (mRecycled)
 			throw new IllegalStateException();
 
-		if (datapath == null)
-			throw new IllegalArgumentException("Data path must not be null!");
-		if (!datapath.endsWith(File.separator))
-			datapath += File.separator;
-
-		File datapathFile = new File(datapath);
-		if (!datapathFile.exists())
-			throw new IllegalArgumentException("Data path does not exist!");
-
-		File tessdata = new File(datapath + "tessdata");
-		if (!tessdata.exists() || !tessdata.isDirectory())
-			throw new IllegalArgumentException("Data path must contain subfolder tessdata!");
-
+		if (datapath == null) {
+			datapath = File.separator+"CONTENT"+File.separator;
+		} else {
+			if (!datapath.endsWith(File.separator))
+				datapath += File.separator;
+			File datapathFile = new File(datapath);
+			if (!datapathFile.exists())
+				throw new IllegalArgumentException("Data path does not exist!");
+			
+			File tessdata = new File(datapath + "tessdata");
+			if (!tessdata.exists() || !tessdata.isDirectory())
+				throw new IllegalArgumentException("Data path must contain subfolder tessdata!");
+		}
+		
 		if (config.isEmpty()) {
 			return nativeInitOem(mNativeData, datapath + "tessdata", language, ocrEngineMode);
 		} else {

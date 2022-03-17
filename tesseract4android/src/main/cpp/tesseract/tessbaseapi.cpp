@@ -228,11 +228,13 @@ jboolean Java_com_googlecode_tesseract_android_TessBaseAPI_nativeInitOem(JNIEnv 
   const char *c_dir = env->GetStringUTFChars(dir, NULL);
   const char *c_lang = env->GetStringUTFChars(lang, NULL);
 
+  bool isContentUrl = strncmp(c_dir+1, "CONTENT", 7)==0;
+
   jboolean res = JNI_TRUE;
 
   if (nat->api.Init(c_dir, 0, c_lang, (tesseract::OcrEngineMode) mode
                     , nullptr, 0, nullptr, nullptr, false
-                    , /*(tesseract::FileReader)*/LoadDataFromContentProvider
+                    , isContentUrl?LoadDataFromContentProvider:NULL
                     )) {
     LOGE("Could not initialize Tesseract API with language=%s!", c_lang);
     res = JNI_FALSE;
