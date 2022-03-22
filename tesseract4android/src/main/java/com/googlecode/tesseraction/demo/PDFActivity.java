@@ -1,4 +1,4 @@
-package com.googlecode.tesseraction;
+package com.googlecode.tesseraction.demo;
 
 import android.Manifest;
 import android.animation.Keyframe;
@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -22,7 +21,6 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.LayerDrawable;
-import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Build;
@@ -32,7 +30,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
-import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Surface;
@@ -43,7 +40,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.AnyThread;
@@ -64,9 +60,10 @@ import com.google.zxing.common.HybridBinarizer;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.googlecode.tesseraction.CMN;
 import com.googlecode.tesseraction.CropView;
+import com.googlecode.tesseraction.FormatUtils;
 import com.googlecode.tesseraction.Options;
+import com.googlecode.tesseraction.R;
 import com.googlecode.tesseraction.databinding.ActivityQrBinding;
-import com.googlecode.tesseraction.demo.PDFActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,19 +75,19 @@ import java.util.Map;
 
 /**HighPerformanceScanning Activity (demo)。<br>
  *&nbsp;&nbsp;{@link #onConfigurationChanged compatibleWithWindowSizeChanges}、<br>
- *&nbsp;&nbsp;{@link QRCameraManager#ResetCameraSettings compatibleWithLandscapeMode}，<br>
- *&nbsp;&nbsp;{@link QRCameraManager#decodeLuminanceSource scanTheISBNCodeHorizontallyAndVertically}<br>
+ *&nbsp;&nbsp;{@link PDFCameraManager#ResetCameraSettings compatibleWithLandscapeMode}，<br>
+ *&nbsp;&nbsp;{@link PDFCameraManager#decodeLuminanceSource scanTheISBNCodeHorizontallyAndVertically}<br>
  *&nbsp;&nbsp;{@link Options#getContinuousFocus supportThreeFocusModes}<br>
  *&nbsp;&nbsp;{@link #onPause 支持熄屏/退入后台时暂停} ，{@link #onResume Continue to scan the code immediately upon recovery} 。<br>
- *&nbsp;&nbsp;{@link QRCameraManager#decorateCameraSettings The configuration of exposure value, flash, etc. has been considered.}<br> */
-public /*final*/ class QRActivity extends Activity implements View.OnClickListener {
+ *&nbsp;&nbsp;{@link PDFCameraManager#decorateCameraSettings The configuration of exposure value, flash, etc. has been considered.}<br> */
+public /*final*/ class PDFActivity extends Activity implements View.OnClickListener {
 	private final static String[] permissions = new String[]{Manifest.permission.CAMERA};
 	
 	Options opt;
 	
-	private QRCameraManager cameraManager;
+	private PDFCameraManager cameraManager;
 	
-	public QRActivityHandler handler;
+	public PDFActivityHandler handler;
 	
 	private final MultiFormatReader multiFormatReader = new MultiFormatReader();
 	
@@ -191,7 +188,7 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 		
 		//qr_frame.a = this;
 		
-		cameraManager = new QRCameraManager(this, dm);
+		cameraManager = new PDFCameraManager(this, dm);
 		
 		//qr_frame.setFramingRect(cameraManager.getFramingRect(false));
 		
@@ -273,8 +270,8 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 	EnumSet<BarcodeFormat> decodeFormats=EnumSet.noneOf(BarcodeFormat.class);
 	
 	private boolean check_camera(boolean init) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && QRActivity.this.checkPermission(Manifest.permission.CAMERA, android.os.Process.myPid(), Process.myUid()) != PackageManager.PERMISSION_GRANTED) {
-			QRActivity.this.requestPermissions(permissions, init?1:2);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && PDFActivity.this.checkPermission(Manifest.permission.CAMERA, Process.myPid(), Process.myUid()) != PackageManager.PERMISSION_GRANTED) {
+			PDFActivity.this.requestPermissions(permissions, init?1:2);
 			return false;
 		}
 		return true;
@@ -357,14 +354,14 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 	
 	static class ParseCodeRunnable implements Runnable {
 		private final MultiFormatReader multiFormatReader;
-		private final WeakReference<QRActivity> activity;
+		private final WeakReference<PDFActivity> activity;
 		private volatile boolean stopped;
 		private volatile boolean finished;
 		private final Thread t = new Thread(this);
 		final Uri data;
 		Result res=null;
 		
-		ParseCodeRunnable(QRActivity a, Uri data) {
+		ParseCodeRunnable(PDFActivity a, Uri data) {
 			this.data = data;
 			multiFormatReader=a.multiFormatReader;
 			activity = new WeakReference<>(a);
@@ -382,7 +379,7 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 		@AnyThread
 		@Override
 		public void run() {
-			QRActivity a = activity.get();
+			PDFActivity a = activity.get();
 			if(finished) {
 				if(res!=null) {
 					a.onDecodeSuccess(res);
@@ -452,7 +449,7 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 		}
 		
 		private void finished() {
-			QRActivity a = activity.get();
+			PDFActivity a = activity.get();
 			if(stopped||a==null) {
 				return;
 			}
@@ -522,7 +519,7 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 		}
 		
 		if(surfaceView==null) {
-			//handler = new QRActivityHandler(this, cameraManager);
+			//handler = new PDFActivityHandler(this, cameraManager);
 			// The prefs can't change while the thread is running, so pick them up once here.
 			
 			setHints();
@@ -760,14 +757,11 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 			case R.id.ivBack:{
 				finish();
 			} break;
-			case R.id.demo:{
-				startActivity(new Intent(this, PDFActivity.class));
-			} break;
 			case R.id.torch: {
 				if(suspensed) {
 					isTorchLighting=!isTorchLighting;
 					updateTorchLight(isTorchLighting);
-					if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 						CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
 						try {
 							camManager.setTorchMode(camManager.getCameraIdList()[0], isTorchLighting);
@@ -839,16 +833,16 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 	}
 	
 	/** 此Handler位于异步线程，这样不会卡UI */
-	static class QRActivityHandler extends Handler {
+	static class PDFActivityHandler extends Handler {
 		TessBaseAPI tess;
-		public final WeakReference<QRActivity> activity;
+		public final WeakReference<PDFActivity> activity;
 		
 		private boolean running = true;
 		
 		private int failInc;
 		
 		//构造
-		public QRActivityHandler(QRActivity activity) {
+		public PDFActivityHandler(PDFActivity activity) {
 			//super(Looper.myLooper());
 			activity.handler=this;
 			this.activity = new WeakReference<>(activity);
@@ -867,7 +861,7 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 		 * took. For efficiency, reuse the same reader object.
 		 * @param data The YUV preview frame.  */
 		private void decode(byte[] data) {
-			QRActivity a = activity.get();
+			PDFActivity a = activity.get();
 			if(a==null) {
 				stop();
 				return;
@@ -877,11 +871,11 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 			long start = System.currentTimeMillis();
 			Result rawResult = null;
 			//CMN.Log("decode……", CMN.id(data));
-			QRCameraManager camera = a.cameraManager;
+			PDFCameraManager camera = a.cameraManager;
 			boolean debugCamera=false;
 			boolean testTesseraction=false;
 			if(!debugCamera && testTesseraction) {
-				// 测试OCR插件！！！
+				// TestTheOCRPlugin！！！
 				if(tess==null) {
 					tess = new TessBaseAPI();
 					String dataPath = new File(Environment.getExternalStorageDirectory(), "tesseract").getAbsolutePath();
@@ -945,7 +939,7 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 			running=false;
 		}
 		
-		public synchronized QRActivityHandler ready() {
+		public synchronized PDFActivityHandler ready() {
 			running=true;
 			return this;
 		}
@@ -953,16 +947,16 @@ public /*final*/ class QRActivity extends Activity implements View.OnClickListen
 	
 	/**酱油线程*/
 	static class DecodeThread extends Thread {
-		WeakReference<QRActivity> activity;
+		WeakReference<PDFActivity> activity;
 		
-		public DecodeThread(QRActivity qrActivity) {
+		public DecodeThread(PDFActivity qrActivity) {
 			activity = new WeakReference<>(qrActivity);
 		}
 		
 		@Override
 		public void run() {
 			Looper.prepare();
-			new QRActivityHandler(activity.get());
+			new PDFActivityHandler(activity.get());
 			activity=null;
 			//CMN.Log("thread_run……");
 			Looper.loop();

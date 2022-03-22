@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.googlecode.tesseraction;
+package com.googlecode.tesseraction.demo;
 
 import static com.googlecode.tesseraction.QRCameraUtils.findBestPreviewSizeValue;
 import static com.googlecode.tesseraction.QRCameraUtils.getContinuousFocusing;
@@ -45,6 +45,8 @@ import com.google.zxing.LuminanceSource;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
+import com.googlecode.tesseraction.CMN;
+import com.googlecode.tesseraction.R;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -53,7 +55,7 @@ import java.lang.ref.WeakReference;
  * talking to it. The implementation encapsulates the steps needed to take
  * preview-sized images, which are used for both preview and decoding.
  * @author dswitkin@google.com (Daniel Switkin) */
-public final class QRCameraManager implements SensorEventListener {
+public final class PDFCameraManager implements SensorEventListener {
 	public Camera camera;
 	public int screenRotation;
 	private ImageListener imageListener;
@@ -68,7 +70,7 @@ public final class QRCameraManager implements SensorEventListener {
 	
 	private boolean ContinuousFocusing;
 	
-	QRActivity a;
+	PDFActivity a;
 	
 	/** Preview frames are delivered here, which we pass on to the registered
 	 * handler. Make sure to clear the handler so it will only receive one
@@ -97,7 +99,7 @@ public final class QRCameraManager implements SensorEventListener {
 	/** 摄像机参数 */
 	private Camera.Parameters parameters;
 	
-	public QRCameraManager(QRActivity a, DisplayMetrics dm) {
+	public PDFCameraManager(PDFActivity a, DisplayMetrics dm) {
 		this.a=a;
 		
 		this.dm = dm;
@@ -351,7 +353,7 @@ public final class QRCameraManager implements SensorEventListener {
 	 * @param rotate Whether to try again with rotated data for orientation-sensitive bar-codes such as ISBN.
 	 *   TheQRCodeDoesNotHaveToBeRotatedOrFlipped
 	 * */
-	public Result decodeLuminanceSource(QRActivity.QRActivityHandler handler, byte[] data, int sWidth, int sHeight, boolean rotated, boolean rotate, boolean invert) throws NotFoundException {
+	public Result decodeLuminanceSource(PDFActivity.PDFActivityHandler handler, byte[] data, int sWidth, int sHeight, boolean rotated, boolean rotate, boolean invert) throws NotFoundException {
 		RectF rect = getFramingRect(false);
 		// Go ahead and assume it's YUV rather than die.
 		//if(true) return new PlanarYUVLuminanceSource(data, sWidth, sHeight, 0, 0, sWidth, sHeight, false);
@@ -434,7 +436,7 @@ public final class QRCameraManager implements SensorEventListener {
 		return handler.try_decode_source(source);
 	}
 	
-	public Result decodeOCR(QRActivity.QRActivityHandler handler, byte[] data, int sWidth, int sHeight, boolean rotated, boolean rotate, boolean invert) throws NotFoundException {
+	public Result decodeOCR(PDFActivity.PDFActivityHandler handler, byte[] data, int sWidth, int sHeight, boolean rotated, boolean rotate, boolean invert) throws NotFoundException {
 		RectF rect = getFramingRect(false);
 		// Go ahead and assume it's YUV rather than die.
 		//if(true) return new PlanarYUVLuminanceSource(data, sWidth, sHeight, 0, 0, sWidth, sHeight, false);
