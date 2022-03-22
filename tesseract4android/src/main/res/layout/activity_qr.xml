@@ -48,7 +48,7 @@
 			android:layout_weight="1"
 			android:textColor="#ffffffff"
 			android:textSize="20sp"
-			tools:text="扫一扫"
+			tools:text="scanIt"
 			android:gravity="center_vertical"
 			android:paddingLeft="10dp"
 			/>
@@ -59,7 +59,11 @@
 			style="@style/QRActionBarItem"
 			android:visibility="gone"
 			/>
-
+		<ImageView
+			android:id="@+id/demo"
+			android:src="@drawable/ic_baseline_torch"
+			style="@style/QRActionBarItem"
+			/>
 		<ImageView
 			android:id="@+id/torch"
 			android:src="@drawable/ic_baseline_torch"
